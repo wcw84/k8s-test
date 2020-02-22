@@ -81,7 +81,7 @@ spec:
 
 istio还有很多更高级的演示，可以看下官网上的[BookInfo示例](https://preliminary.istio.io/zh/docs/examples/bookinfo/)
 
-参考：
+参考：  
 https://preliminary.istio.io/zh/docs/concepts/what-is-istio/
 https://github.com/AliyunContainerService/k8s-for-docker-desktop
 https://sanyuesha.com/2019/05/17/kubernetes-tutorial-for-beginner/
