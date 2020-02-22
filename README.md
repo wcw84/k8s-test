@@ -1,4 +1,3 @@
-# k8s-test
 这篇文章通过微服务（或者说多进程服务），把docker、k8s和istio串了起来。涉及相应的开发、部署、升级，本文把主干引了出来，但每一步更多的枝叶还需要取完善（可参考结尾链接）。实验环境是一台Macbook Pro上，安装Docker Desktop。
 
 #### 1，创建两个Http服务，用来做示例。
@@ -82,6 +81,6 @@ spec:
 istio还有很多更高级的演示，可以看下官网上的[BookInfo示例](https://preliminary.istio.io/zh/docs/examples/bookinfo/)
 
 参考：  
-https://preliminary.istio.io/zh/docs/concepts/what-is-istio/
-https://github.com/AliyunContainerService/k8s-for-docker-desktop
-https://sanyuesha.com/2019/05/17/kubernetes-tutorial-for-beginner/
+https://preliminary.istio.io/zh/docs/concepts/what-is-istio  
+https://github.com/AliyunContainerService/k8s-for-docker-desktop   
+https://sanyuesha.com/2019/05/17/kubernetes-tutorial-for-beginner/  
