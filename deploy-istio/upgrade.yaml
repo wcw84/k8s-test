@@ -1,0 +1,19 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: logic
+  namespace: istio-test
+spec:
+  hosts:
+    - logic
+  http:
+    - route:
+        - destination:
+            host: logic
+            subset: v2
+          weight: 10
+        - destination:
+            host: logic
+            subset: v1
+          weight: 90
+---

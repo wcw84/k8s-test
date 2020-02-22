@@ -1,0 +1,95 @@
+ apiVersion: apps/v1
+ kind: Deployment                                          # 资源类型
+ metadata:
+   name: access
+   namespace: istio-test
+ spec:
+   selector:
+     matchLabels:
+       app: access-app
+#   replicas: 2                                             # pod 副本数量, 在istio里面，默认
+#   minReadySeconds: 15
+#   strategy:
+#     type: RollingUpdate                                   # 部署策略 滚动升级
+#     rollingUpdate:
+#       maxUnavailable: 1                                   # 在升级过程中最多允许几个 pod 不可用
+#       maxSurge: 1                                         # 升级过程中允许最多添加几个 pod, 如果 副本是 2 升级过程中要保证可用一直是 2 必须要再加一个 pod
+   template:                                               # 定义 deploy 使用 pod
+     metadata:
+       labels:
+         app: access-app                                  #  模板定的 pod 的 label 根据这个 label 生成 service
+     spec:                                               # spec 相当于 step-one 中的 pod
+       containers:
+         - image: k8s-test/access-http
+           imagePullPolicy: IfNotPresent                         # 镜像策略, Always, IfNotPresent
+           name: access-app
+           ports:
+             - containerPort: 8080
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: svc-access
+  namespace: istio-test
+spec:
+   # type: LoadBalancer      # service 类型 有 4 种类型
+  ports:
+  - port: 8080           # service 监听端口
+    name: http
+    # protocol: http      # 协议
+    # targetPort: 8080     # 目标端口
+  selector:
+    app: access-app         # label 定义的 service 根据 app: ember-app 这个 label 寻找 pod
+
+#---
+#apiVersion: v1
+#kind: Service
+#metadata:
+#  name: svc-access
+#  namespace: istio-test
+#  labels:
+#    app: svc-access
+#    service: svc-access
+#spec:
+#  ports:
+#  - port: 8080
+#    name: http
+#  selector:
+#    app: access-app
+#---
+#apiVersion: v1
+#kind: ServiceAccount
+#metadata:
+#  name: sa-access
+#  labels:
+#    account: access
+#---
+#apiVersion: apps/v1
+#kind: Deployment
+#metadata:
+#  name: access
+#  namespace: istio-test
+#  labels:
+#    app: access
+#    version: v1
+#spec:
+#  replicas: 1
+#  selector:
+#    matchLabels:
+#      app: access-app
+#      version: v1
+#  template:
+#    metadata:
+#      labels:
+#        app: access-app
+#        version: v1
+#    spec:
+#      # serviceAccountName: sa-access
+#      containers:
+#      - name: access
+#        image: k8s-test/access-http
+#        imagePullPolicy: IfNotPresent
+#        ports:
+#        - containerPort: 8080
+#---

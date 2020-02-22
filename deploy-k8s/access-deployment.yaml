@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment                                          # 资源类型
+metadata:
+  name: access
+  namespace: k8s-test
+spec:
+  selector: 
+    matchLabels:
+      app: access-app
+  # replicas: 2                                             # pod 副本数量
+  # minReadySeconds: 15
+  # strategy:
+  #   type: RollingUpdate                                   # 部署策略 滚动升级
+  #   rollingUpdate: 
+  #     maxUnavailable: 1                                   # 在升级过程中最多允许几个 pod 不可用
+  #     maxSurge: 1                                         # 升级过程中允许最多添加几个 pod, 如果 副本是 2 升级过程中要保证可用一直是 2 必须要再加一个 pod
+  template:                                               # 定义 deploy 使用 pod
+    metadata:
+      labels:
+        app: access-app                                  #  模板定的 pod 的 label 根据这个 label 生成 service
+    spec:                                               # spec 相当于 step-one 中的 pod
+      containers:
+        - image: k8s-test/access-http
+          imagePullPolicy: IfNotPresent                         # 镜像策略, Always, IfNotPresent, Never
+          name: access-app
+          ports:
+            - containerPort: 8080
+
+---
+
+apiVersion: v1
+kind: Service              # 资源类型
+metadata:
+  name: access-service
+  namespace: k8s-test
+spec:
+  selector:                
+    app: access-app         # label 定义的 service 根据 app: ember-app 这个 label 寻找 pod
+  type: NodePort       # service 类型 有 4 种类型 LoadBalancer,
+  ports:
+  - port: 8080           # service 监听端口
+    nodePort: 32500     # 暴露给外部访问  The range of valid ports is 30000-32767
+    name: http
+  # type: LoadBalancer   # service 类型 有 4 种类型 ClusterIP, NodePort, LoadBalancer
+  # ports:
+  # - port: 8081           # service 监听端口
+  #   protocol: TCP      # 协议  
+  #   targetPort: 8080     # 目标端口 

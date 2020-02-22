@@ -1,0 +1,43 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: Gateway
+metadata:
+  name: mytest-gateway
+  namespace: istio-test
+spec:
+  selector:
+    istio: ingressgateway # use istio default controller
+  servers:
+  - port:
+      number: 80  #不能随意设置，kubectl get svc istio-ingressgateway -n istio-system，列出ingressgateway对外暴露的端口
+      name: http
+      protocol: HTTP
+    hosts:
+    - "host1.io"
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: my-istio-test
+  namespace: istio-test
+spec:
+  hosts:
+  - "*"
+  gateways:
+  - mytest-gateway
+  http:
+  # - match:
+    # - uri:
+    #     exact: /productpage
+    # - uri:
+    #     prefix: /static
+    # - uri:
+    #     exact: /login
+    # - uri:
+    #     exact: /logout
+    # - uri:
+    #     prefix: /api/v1/products
+  - route:
+    - destination:
+        host: svc-access
+        port:
+          number: 8080

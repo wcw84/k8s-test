@@ -1,0 +1,86 @@
+apiVersion: apps/v1
+kind: Deployment                                          # 资源类型
+metadata:
+  name: logic-v1
+  namespace: istio-test
+  labels:
+    app: logic
+    version: v1
+spec:
+  selector: 
+    matchLabels:
+      app: logic-app
+      version: v1
+#  replicas: 2                                             # pod 副本数量
+#  minReadySeconds: 15
+#  strategy:
+#    type: RollingUpdate                                   # 部署策略 滚动升级
+#    rollingUpdate:
+#      maxUnavailable: 1                                   # 在升级过程中最多允许几个 pod 不可用
+#      maxSurge: 1                                         # 升级过程中允许最多添加几个 pod, 如果 副本是 2 升级过程中要保证可用一直是 2 必须要再加一个 pod
+  template:                                               # 定义 deploy 使用 pod
+    metadata:
+      labels:
+        app: logic-app
+        version: v1
+    spec:                                               # spec 相当于 step-one 中的 pod
+      containers:
+        - image: k8s-test/logic-http
+          imagePullPolicy: IfNotPresent                         # 镜像策略, Always, IfNotPresent
+          name: logic-app
+          ports:
+            - containerPort: 8080
+          env:
+            - name: MODULE_NAME
+              value: "Logic-v1"
+---
+apiVersion: apps/v1
+kind: Deployment                                          # 资源类型
+metadata:
+  name: logic-v2
+  namespace: istio-test
+  labels:
+    app: logic
+    version: v2
+spec:
+  selector:
+    matchLabels:
+      app: logic-app
+      version: v2
+  #  replicas: 2                                             # pod 副本数量
+  #  minReadySeconds: 15
+  #  strategy:
+  #    type: RollingUpdate                                   # 部署策略 滚动升级
+  #    rollingUpdate:
+  #      maxUnavailable: 1                                   # 在升级过程中最多允许几个 pod 不可用
+  #      maxSurge: 1                                         # 升级过程中允许最多添加几个 pod, 如果 副本是 2 升级过程中要保证可用一直是 2 必须要再加一个 pod
+  template:                                               # 定义 deploy 使用 pod
+    metadata:
+      labels:
+        app: logic-app
+        version: v2
+    spec:                                               # spec 相当于 step-one 中的 pod
+      containers:
+        - image: k8s-test/logic-http
+          imagePullPolicy: IfNotPresent                         # 镜像策略, Always, IfNotPresent
+          name: logic-app
+          ports:
+            - containerPort: 8080
+          env:
+            - name: MODULE_NAME
+              value: "Logic-v2"
+---
+apiVersion: v1
+kind: Service              # 资源类型
+metadata:
+  name: logic
+  namespace: istio-test
+spec:
+  ports:
+  - port: 8081           # service 监听端口
+    name: http
+    # protocol: http      # 协议  
+    targetPort: 8080     # 目标端口
+  selector:                
+    app: logic-app         # label 定义的 service 根据 app: ember-app 这个 label 寻找 pod
+
